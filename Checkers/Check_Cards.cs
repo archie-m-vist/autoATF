@@ -81,7 +81,11 @@ namespace AATF
             if (trickCount > constants.free_trick_cards[line.ptype])
             {
                 standard_cards += trickCount - constants.free_trick_cards[line.ptype];
-                Console.WriteLine(line.id + "\t" + line.name + " has " + (trickCount-constants.free_trick_cards[line.ptype]) + " excess trick cards; only one will be counted.");
+                Console.WriteLine("WARNING:\t" + line.id + "\t" + line.name + " has " + (trickCount-constants.free_trick_cards[line.ptype]) + " excess trick cards; only one will be free.");
+            }
+            else if (trickCount < constants.free_trick_cards[line.ptype])
+            {
+                Console.WriteLine("WARNING:\t" + line.id + "\t" + line.name + " has free trick card slots, if you wish to use them. (This is not an error.)");
             }
             // Check the card counts
             if (standard_cards > constants.card_limits[line.ptype])
@@ -96,6 +100,11 @@ namespace AATF
             else if (standard_cards < constants.card_minimum[line.ptype])
             {
                 Console.WriteLine(line.id + "\t" + line.name + " has too few Cards (Has " + standard_cards + ", must have at least " + constants.card_minimum[line.ptype] + " max)");
+                variables.errors++;
+            }
+            else if (standard_cards < constants.card_limits[line.ptype])
+            {
+                Console.WriteLine("WARNING:\t" + line.id + "\t" + line.name + " has free card slots, if you wish to use them. (This is not an error.)");
             }
         }
 
