@@ -9,66 +9,43 @@ namespace AATF
     {
         public static void check_stats(player line)
         {
-            // default to "there is an error in your stats"
-            line.statType = 0;
+            // default to error
+            line.statType = -1;
+            if (!(line.Goalkeeping == line.Stamina &&
+                    line.Dribbling == line.Goalkeeping &&
+                    line.Finishing == line.Dribbling &&
+                    line.Low_Pass == line.Finishing &&
+                    line.Lofted_Pass == line.Low_Pass &&
+                    line.Header == line.Lofted_Pass &&
+                    line.Controlled_Spin == line.Header &&
+                    line.Saving == line.Controlled_Spin &&
+                    line.Clearing == line.Saving &&
+                    line.Reflexes == line.Clearing &&
+                    line.Body_Balance == line.Reflexes &&
+                    line.Physical_Contact == line.Body_Balance &&
+                    line.Kicking_Power == line.Physical_Contact &&
+                    line.Explosive_Power == line.Kicking_Power &&
+                    line.Jump == line.Explosive_Power &&
+                    line.Ball_Control == line.Jump &&
+                    line.Ball_Winning == line.Ball_Control &&
+                    line.Coverage == line.Ball_Winning &&
+                    line.Place_Kicking == line.Coverage &&
+                    line.Speed == line.Place_Kicking &&
+                    line.Stamina == line.Speed))
+            {
+                Console.WriteLine(line.id + "\t" + line.name + " has mismatched stats.");
+                variables.errors++;
+            }
+            int stat = line.Goalkeeping;
             for (uint i = 0; i < constants.stats.Length; ++i)
             {
-                if (line.Goalkeeping == constants.stats[i] &&
-                   line.Dribbling == constants.stats[i] &&
-                   line.Finishing == constants.stats[i] &&
-                   line.Low_Pass == constants.stats[i] &&
-                   line.Lofted_Pass == constants.stats[i] &&
-                   line.Header == constants.stats[i] &&
-                   line.Controlled_Spin == constants.stats[i] &&
-                   line.Saving == constants.stats[i] &&
-                   line.Clearing == constants.stats[i] &&
-                   line.Reflexes == constants.stats[i] &&
-                   line.Body_Balance == constants.stats[i] &&
-                   line.Physical_Contact == constants.stats[i] &&
-                   line.Kicking_Power == constants.stats[i] &&
-                   line.Explosive_Power == constants.stats[i] &&
-                   line.Jump == constants.stats[i] &&
-                   line.Ball_Control == constants.stats[i] &&
-                   line.Ball_Winning == constants.stats[i] &&
-                   line.Coverage == constants.stats[i] &&
-                   line.Place_Kicking == constants.stats[i] &&
-                   line.Speed == constants.stats[i] &&
-                   line.Stamina == constants.stats[i] &&
-                   (i == 0 || line.position != 0)) // ensure goalkeepers are on i=0 only
-                {
-                    line.ptype = i;
-                    line.statType = 2;
-                }
-                else if (line.Goalkeeping == constants.stats_system1[i] &&
-                   line.Dribbling == constants.stats_system1[i] &&
-                   line.Finishing == constants.stats_system1[i] &&
-                   line.Low_Pass == constants.stats_system1[i] &&
-                   line.Lofted_Pass == constants.stats_system1[i] &&
-                   line.Header == constants.stats_system1[i] &&
-                   line.Controlled_Spin == constants.stats_system1[i] &&
-                   line.Saving == constants.stats_system1[i] &&
-                   line.Clearing == constants.stats_system1[i] &&
-                   line.Reflexes == constants.stats_system1[i] &&
-                   line.Body_Balance == constants.stats_system1[i] &&
-                   line.Physical_Contact == constants.stats_system1[i] &&
-                   line.Kicking_Power == constants.stats_system1[i] &&
-                   line.Explosive_Power == constants.stats_system1[i] &&
-                   line.Jump == constants.stats_system1[i] &&
-                   line.Ball_Control == constants.stats_system1[i] &&
-                   line.Ball_Winning == constants.stats_system1[i] &&
-                   line.Coverage == constants.stats_system1[i] &&
-                   line.Place_Kicking == constants.stats_system1[i] &&
-                   line.Speed == constants.stats_system1[i] &&
-                   line.Stamina == constants.stats_system1[i] &&
-                   (i == 0 || line.position != 0)) // goalkeepers must be checked on i=0
-                {
-                    line.ptype = i;
-                    line.statType = 1;
-                }
+                if (stat == constants.stats[i]) { line.statType = 0; line.ptype = i; }
+                else if ( stat == constants.stats[i] - 3 ) { line.statType = 1; line.ptype = i; }
+                else if ( stat == constants.stats[i] + 3 ) { line.statType = 2; line.ptype = i; }
             }
 
             // If it doesn't match anything after checking all options
-            if (line.statType == 0)
+            if (line.statType < 0)
             {
                 Console.WriteLine(line.id + "\t" + line.name + " has invalid stats");
                 variables.errors++;
@@ -77,17 +54,16 @@ namespace AATF
 
         public static void check_prowess(player line)
         {
-            uint stats = 0U;
-
             // Prowess can be set to any value, but cannot exceed the medal stat for that player
-            // Lets get the medal stat for that player, then compare it to their Att/Def Prowess
-            if (line.statType == 1) { stats = constants.stats_system1[line.ptype]; }
-            else if (line.statType == 2) { stats = constants.stats[line.ptype]; }
-            else
+            // a player with valid stats should have them all equal
+            int stats = line.Goalkeeping;
+            // First check if player has valid stats
+            if ( line.statType < 0 )
             {
                 // Player has invalid stats, disregard Prowess check
                 Console.WriteLine(line.id + "\t" + line.name + " has invalid stats, so Prowess cannot be checked");
                 variables.errors++;
+                stats = -1;
             }
 
             if (stats > 0)
@@ -108,65 +84,24 @@ namespace AATF
 
         public static void check_ggss(team squad)
         {
-            uint golds = 0;
-            uint silvers = 0;
-            uint regulars = 0;
+            uint[] counts = { 0, 0, 0, 0 };
+            uint[] required = { 18, 2, 2, 1 };
+            string[] types = { "regular", "bronze", "silver", "gold" };
 
             foreach (player line in squad.team_players)
             {
-                if (line.ptype == 3)
-                {
-                    golds++;
-                }
-
-                if (line.ptype == 2)
-                {
-                    silvers++;
-                }
-                // count regular and gk players together
-                if (line.ptype == 0 || line.ptype == 1)
-                {
-                    regulars++;
-                }
+                
+                int type = Math.Max((int)(line.ptype) - 1, 0);
+                counts[type] += 1;
             }
 
-            // GOLDS
-            if (golds > constants.players_gold)
+            for ( uint i = 0; i < counts.Length; ++i )
             {
-                Console.WriteLine(squad.team_name + " has too many Gold Players (Has " + golds + ", should have " + constants.players_gold + ")");
-                variables.errors++;
-            }
-
-            if (golds < constants.players_gold)
-            {
-                Console.WriteLine(squad.team_name + " has too few Gold Players (Has " + golds + ", should have " + constants.players_gold + ")");
-                variables.errors++;
-            }
-
-            // SILVERS
-            if (silvers > constants.players_silver)
-            {
-                Console.WriteLine(squad.team_name + " has too many Silver Players (Has " + silvers + ", should have " + constants.players_silver + ")");
-                variables.errors++;
-            }
-
-            if (silvers < constants.players_silver)
-            {
-                Console.WriteLine(squad.team_name + " has too few Silver Players (Has " + silvers + ", should have " + constants.players_silver + ")");
-                variables.errors++;
-            }
-
-            // REGULARS AND GOALKEEPERS
-            if (regulars > constants.players_regular_and_gk)
-            {
-                Console.WriteLine(squad.team_name + " has too many Non-Medal Players (Has " + regulars + ", should have " + constants.players_regular_and_gk + ")");
-                variables.errors++;
-            }
-
-            if (regulars < constants.players_regular_and_gk)
-            {
-                Console.WriteLine(squad.team_name + " has too few Non-Medal Players (Has " + regulars + ", should have " + constants.players_regular_and_gk + ")");
-                variables.errors++;
+                if (counts[i] == required[i]) { continue; }
+                string errortype = "";
+                if (counts[i] > required[i]) { errortype = " has too many "; }
+                else if (counts[i] < required[i]) { errortype = " has too few ";  }
+                Console.WriteLine(squad.team_name + errortype + types[i] + "; has " + counts[i] + ", needs " + required[i]);
             }
         }
     }

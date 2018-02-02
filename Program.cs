@@ -31,7 +31,7 @@ namespace AATF
     public class heightsystem
     {
         // constructor
-        public heightsystem (uint id, uint[] limits, uint min_double_a, string desc, uint gkheight = 189)
+        public heightsystem (uint id, uint[] limits, int max_stat_nerf, uint min_double_a, string desc, uint gkheight = 189)
         {
             // numeric identifier
             this.id = id;
@@ -43,6 +43,8 @@ namespace AATF
             this.total_limit = 25;
             uint i = 0;
             for (i=0; i < constants.height_brackets.Length; ++i ) { this.total_limit += constants.height_brackets[i] * this.limits[i]; }
+            // maximum bracket where stat nerfs are required
+            this.max_stat_nerf = max_stat_nerf;
             // minimum bracket where two A positions are allowed
             this.min_double_a_bracket = min_double_a;
             // maximum height for goalkeepers; currently the same on both brackets
@@ -52,6 +54,7 @@ namespace AATF
         public uint id { get; set; }
         public uint[] limits { get; set; }
         public uint total_limit { get; set; }
+        public int max_stat_nerf { get; set; }
         public uint min_double_a_bracket { get; set; }
         public string desc { get; set; }
         public uint max_gk_height { get; set; }
@@ -62,11 +65,9 @@ namespace AATF
         public const uint players_per_team = 23;
 
         // indexed by ptype values: 0 - GK, 1 - regular, 2 - silver, 3 - gold
-        public static readonly uint[] stats = { 77, 77, 88, 99 };
-        // Summer 2015 Ruleset - All players above 189cm in height get a variable stat nerf
-        public static readonly uint[] stats_system1 = { 74, 74, 84, 94 };
+        public static readonly uint[] stats = { 77, 77, 89, 94, 99 };
 
-        public static readonly uint[] form = { 4, 4, 8, 8 };
+        public static readonly uint[] form = { 4, 4, 8, 8, 8 };
         
         public const uint weakfoot_accuracy = 2;
         public const uint weakfoot_usage = 2;
@@ -78,9 +79,9 @@ namespace AATF
         public const uint injury_tolerance = 3;
 
         // regular cup rules
-        public static readonly uint[] card_limits = { 1, 2, 3, 4 };
-        public static readonly uint[] card_minimum = { 0, 0, 0, 0 };
-        public static readonly uint[] free_trick_cards = { 0, 0, 1, 1 };
+        public static readonly uint[] card_limits = { 1, 2, 3, 4, 5 };
+        public static readonly uint[] card_minimum = { 0, 0, 0, 0, 0 };
+        public static readonly uint[] free_trick_cards = { 0, 0, 1, 1, 1 };
 
         // defines which cards qualify for the free trick cards
         public static readonly uint[] trick_cards = { 0, 1, 2, 3, 4, 5, 16 };
@@ -90,22 +91,18 @@ namespace AATF
         public const uint positions_minimum_mf = 1;
         public const uint positions_minimum_fw = 1;
 
-        public const uint players_gold = 2;
+        public const uint players_gold = 1;
         public const uint players_silver = 2;
-        public const uint players_regular_and_gk = 19;
+        public const uint players_bronze = 2;
+        public const uint players_regular_and_gk = 18;
 
         public const uint height_maximum_pes = 210;
         public const uint height_maximum_4cc = 205;
         public const uint height_minimum_pes = 148;
 
         // height brackets as array
-        public static readonly uint[] height_brackets = { 200, 195, 190, 185, 180, 155 };
-
-        // Height Abuse System 1
-        public static readonly heightsystem system1 = new heightsystem(1, new uint[] { 0, 2, 2, 6, 7, 6 }, 999, "all players above 189cm have a variable stats nerf");
-        // Height Abuse System 2
-        public static readonly heightsystem system2 = new heightsystem(2, new uint[] { 0, 0, 0, 10, 7, 6 }, 5, "no players above 189cm; two A positions for players below 180cm");
-
+        public static readonly uint[] height_brackets = { 194, 185, 180, 175 };
+        
         // Age Abuse
         public const uint age_maximum = 50;
         public const uint age_minimum = 15;

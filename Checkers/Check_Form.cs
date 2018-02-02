@@ -12,7 +12,7 @@ namespace AATF
             // Check what type the player is, and check if they have the right form for that type
 
             // If there was no stat type assigned
-            if (line.statType == 0)
+            if (line.statType < 0)
             {
                 Console.WriteLine(line.id + "\t" + line.name + " has invalid stats, so Form cannot be checked");
                 variables.errors++;

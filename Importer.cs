@@ -100,7 +100,7 @@ namespace AATF
 
         // Player Definitions
         public uint ptype; // 0 for gk, 1 for regular, 2 for silver, 3 for gold
-        public uint statType; // 0 for error, 1 for system1, 2 for system2
+        public int statType; // <0 for error, 0 for normal, 1 for -3 system1, 2 for +3 system2
         public bool is_gold;
         public bool is_silver;
         public bool is_regular;

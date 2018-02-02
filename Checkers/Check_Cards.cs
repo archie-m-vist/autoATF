@@ -34,7 +34,7 @@ namespace AATF
                 {
                     trickCount += (uint)line.Cards_Skills[i];
                     trickIndex++;
-                    if (line.Cards_Skills[i] == 1) { Console.WriteLine(line.id + "\t" + line.name + " has trick card " + constants.skill_names[i]); }
+                    //if (line.Cards_Skills[i] == 1) { Console.WriteLine(line.id + "\t" + line.name + " has trick card " + constants.skill_names[i]); }
                 }
                 // otherwise add card to total
                 else { standard_cards += (uint)line.Cards_Skills[i]; }
