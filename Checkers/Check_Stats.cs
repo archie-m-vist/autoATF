@@ -43,6 +43,7 @@ namespace AATF
                 else if ( stat == constants.stats[i] - 3 ) { line.statType = 1; line.ptype = i; }
                 else if ( stat == constants.stats[i] + 3 ) { line.statType = 2; line.ptype = i; }
             }
+            if ( line.position == 0 ) { line.ptype = 0; }
 
             // If it doesn't match anything after checking all options
             if (line.statType < 0)

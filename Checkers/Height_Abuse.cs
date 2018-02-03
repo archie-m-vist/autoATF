@@ -26,6 +26,7 @@ namespace AATF
                     }
                 }
                 if ( line.height == 189 && line.is_goalkeeper ) { brackets[1]++; found = true; }
+                if ( line.height < 175 ) { brackets[3]++; found = true; }
                 if (!found)
                 {
                     Console.WriteLine("HEIGHT ABUSE: " + line.id + "\t" + line.name + " has invalid height " + line.height + "; must be 194, 185, 180, 175.");
